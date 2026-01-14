@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Research Viewer Pro</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --panel-bg: #252526;
+            --border-color: #3e3e42;
+            --accent-blue: #0078d4;
+            --accent-green: #107c10;
+            --text-color: #eee;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .controls {
+            background: var(--panel-bg);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-right: 1px solid #444;
+            padding-right: 15px;
+        }
+
+        .group:last-child {
+            border-right: none;
+        }
+
+        input,
+        button,
+        select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: #333;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        button {
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-blue {
+            background: var(--accent-blue);
+            border: none;
+        }
+
+        .btn-green {
+            background: var(--accent-green);
+            border: none;
+        }
+
+        #grid-container {
+            display: grid;
+            gap: 10px;
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Draggable Cell Styles */
+        .grid-cell {
+            background: #000;
+            padding: 5px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #333;
+            transition: border-color 0.2s;
+        }
+
+        .grid-cell.drag-over {
+            border: 2px dashed var(--accent-blue);
+            background: #222;
+        }
+
+        .grid-cell.dragging {
+            opacity: 0.4;
+        }
+
+        .cell-header {
+            display: flex;
+            margin-bottom: 5px;
+            gap: 5px;
+            position: relative;
+            z-index: 10;
+            align-items: center;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: #666;
+            font-size: 1.2em;
+            padding: 0 5px;
+            user-select: none;
+        }
+
+        .drag-handle:hover {
+            color: #fff;
+        }
+
+        .autocomplete-wrapper {
+            flex-grow: 2;
+            position: relative;
+        }
+
+        .file-input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #222;
+            border: 1px solid #444;
+            font-size: 0.85em;
+        }
+
+        .caption-input {
+            flex-grow: 1;
+            width: 30%;
+            background: #222;
+            border: 1px solid #444;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-align: center;
+            color: #aaa;
+        }
+
+        /* THE CUSTOM SUGGESTION BOX */
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            /* REMOVED: right: 0; (This was locking the width) */
+
+            /* NEW: Allow it to be wider than the cell */
+            width: max-content;
+            /* Expands to fit long filenames */
+            min-width: 100%;
+            /* At least as wide as the input */
+            max-width: 600px;
+            /* Cap it so it doesn't go off screen */
+
+            background: #252526;
+            border: 1px solid var(--accent-blue);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            /* Ensure it floats above other cells */
+            display: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        .suggestion-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+            font-size: 0.85em;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .suggestion-item:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .suggestion-item strong {
+            color: #4fc1ff;
+        }
+
+        /* Media Area */
+        .media-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            background: #111;
+            min-height: 200px;
+        }
+
+        /* The separate caption bar (Not overlay anymore) */
+        .caption-bar {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 8px 0;
+            font-weight: bold;
+            font-size: 1.1em;
+            border-bottom: 1px solid #222;
+            display: none;
+            /* Hidden if empty */
+        }
+
+        .media-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        video,
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        #hidden-canvas {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="controls">
+        <div class="group" style="min-width: 320px;">
+            <strong>History:</strong>
+            <select id="history-select" style="flex-grow: 1; max-width: 180px;">
+                <option value="">-- Select Session --</option>
+            </select>
+            <button onclick="loadSession()">Load</button>
+            <button id="btn-save" onclick="saveSession(false)" disabled>Save</button>
+            <button id="btn-save-as" class="btn-blue" onclick="saveSession(true)">Save As</button>
+        </div>
+        <div class="group">
+            <strong>Grid:</strong>
+            <input type="number" id="col-count" value="2" min="1" max="5" style="width: 40px;" onchange="initGrid()">
+            <span>x</span>
+            <input type="number" id="row-count" value="1" min="1" max="5" style="width: 40px;" onchange="initGrid()">
+            <button onclick="initGrid()">Reset</button>
+        </div>
+        <div class="group">
+            <button onclick="globalPlay()">▶</button>
+            <button onclick="globalPause()">⏸</button>
+            <button onclick="globalReset()">⏮</button>
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                    id="sync-toggle" checked> Sync</label>
+        </div>
+        <div class="group" style="border: none; margin-left: auto;">
+            <button onclick="takeSnapshot()">📷 PNG</button>
+            <button class="btn-green" onclick="renderServerSide()">⚡ MP4</button>
+            <span id="render-status" style="display: none; font-size: 0.9em; color: #aaa;">Processing...</span>
+        </div>
+    </div>
+
+    <div id="grid-container"></div>
+    <canvas id="hidden-canvas"></canvas>
+
+    <script>
+        let fileList = [];
+        let activeCells = [];
+        let historyData = [];
+        let dragSrcIndex = null;
+        let currentSessionIndex = null;
+
+        Promise.all([fetch('/files.json').then(r => r.json()), fetch('/history').then(r => r.json())]).then(([f, h]) => { fileList = f; historyData = h; updateHistoryDropdown(); initGrid(); }).catch(console.error);
+
+        function showSuggestions(input, index) {
+            const val = input.value.toLowerCase(); const box = activeCells[index].suggestionBox; box.innerHTML = '';
+            if (!val && document.activeElement !== input) { box.style.display = 'none'; return; }
+            const matches = fileList.filter(f => f.toLowerCase().includes(val)).slice(0, 50);
+            if (matches.length === 0) { box.style.display = 'none'; return; }
+            matches.forEach(fname => {
+                const div = document.createElement('div'); div.className = 'suggestion-item';
+                div.innerHTML = val ? fname.replace(new RegExp(`(${val})`, 'gi'), '<strong>$1</strong>') : fname;
+                div.onmousedown = (e) => { e.preventDefault(); input.value = fname; box.style.display = 'none'; loadMedia(fname, activeCells[index].wrapper, index); };
+                box.appendChild(div);
+            });
+            box.style.display = 'block';
+        }
+        document.addEventListener('click', (e) => { activeCells.forEach(cell => { if (cell && cell.suggestionBox && !cell.wrapper.contains(e.target) && !cell.fileInput.contains(e.target)) cell.suggestionBox.style.display = 'none'; }); });
+
+        function initGrid(keepContent = true) {
+            const container = document.getElementById('grid-container');
+            const cols = parseInt(document.getElementById('col-count').value) || 2;
+            const rows = parseInt(document.getElementById('row-count').value) || 1;
+            let savedData = [];
+            if (keepContent && activeCells.length > 0) savedData = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value }));
+
+            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; container.innerHTML = ''; activeCells = [];
+
+            for (let i = 0; i < cols * rows; i++) {
+                const cell = document.createElement('div'); cell.className = 'grid-cell';
+                cell.draggable = true;
+                cell.ondragstart = (e) => handleDragStart(e, i); cell.ondragover = (e) => handleDragOver(e); cell.ondragenter = (e) => handleDragEnter(e); cell.ondragleave = (e) => handleDragLeave(e); cell.ondrop = (e) => handleDrop(e, i); cell.ondragend = (e) => handleDragEnd(e);
+
+                const header = document.createElement('div'); header.className = 'cell-header';
+                const handle = document.createElement('div'); handle.className = 'drag-handle'; handle.innerHTML = '⣿';
+                const autoWrapper = document.createElement('div'); autoWrapper.className = 'autocomplete-wrapper';
+                const fileInput = document.createElement('input'); fileInput.className = 'file-input'; fileInput.placeholder = "Select file..."; fileInput.autocomplete = "off";
+                fileInput.oninput = () => showSuggestions(fileInput, i); fileInput.onfocus = () => showSuggestions(fileInput, i); fileInput.onchange = (e) => loadMedia(e.target.value, wrapper, i); fileInput.onmousedown = (e) => e.stopPropagation();
+                const suggestionBox = document.createElement('div'); suggestionBox.className = 'suggestions-box';
+                autoWrapper.appendChild(fileInput); autoWrapper.appendChild(suggestionBox);
+                const captionInput = document.createElement('input'); captionInput.className = 'caption-input'; captionInput.placeholder = "Caption";
+                captionInput.oninput = (e) => updateBrowserCaption(i, e.target.value); captionInput.onmousedown = (e) => e.stopPropagation();
+
+                header.appendChild(handle); header.appendChild(autoWrapper); header.appendChild(captionInput); cell.appendChild(header);
+
+                // New Layout for Caption on Top
+                const mediaContainer = document.createElement('div'); mediaContainer.className = 'media-container';
+                const captionBar = document.createElement('div'); captionBar.className = 'caption-bar'; captionBar.id = `caption-${i}`;
+                const wrapper = document.createElement('div'); wrapper.className = 'media-wrapper';
+
+                mediaContainer.appendChild(captionBar);
+                mediaContainer.appendChild(wrapper);
+                cell.appendChild(mediaContainer);
+                container.appendChild(cell);
+
+                activeCells[i] = { cellEl: cell, wrapper, fileInput, captionInput, suggestionBox, captionBar, mediaEl: null };
+
+                if (savedData[i]) {
+                    fileInput.value = savedData[i].file; captionInput.value = savedData[i].caption;
+                    if (savedData[i].file) loadMedia(savedData[i].file, wrapper, i);
+                    if (savedData[i].caption) updateBrowserCaption(i, savedData[i].caption);
+                }
+            }
+        }
+
+        function updateBrowserCaption(i, t) {
+            const bar = activeCells[i].captionBar;
+            if (t) { bar.style.display = 'block'; bar.textContent = t; }
+            else { bar.style.display = 'none'; }
+        }
+
+        function updateHistoryDropdown() {
+            const sel = document.getElementById('history-select'); sel.innerHTML = '<option value="">-- Select Session --</option>';
+            historyData.forEach((item, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.textContent = `${item.name} (${new Date(item.timestamp * 1000).toLocaleDateString()})`; sel.appendChild(opt); });
+            if (currentSessionIndex !== null && historyData[currentSessionIndex]) sel.value = currentSessionIndex;
+        }
+        function loadSession() {
+            const idxStr = document.getElementById('history-select').value; if (idxStr === "") return;
+            currentSessionIndex = parseInt(idxStr); const s = historyData[currentSessionIndex];
+            document.getElementById('col-count').value = s.cols; document.getElementById('row-count').value = s.rows; initGrid(false);
+            s.cells.forEach((d, i) => { if (activeCells[i]) { activeCells[i].fileInput.value = d.file; activeCells[i].captionInput.value = d.caption; loadMedia(d.file, activeCells[i].wrapper, i); updateBrowserCaption(i, d.caption); } });
+            const saveBtn = document.getElementById('btn-save'); saveBtn.disabled = false; saveBtn.innerText = "Save";
+        }
+        function saveSession(asNew) {
+            let name; let indexToSend = null;
+            if (asNew || currentSessionIndex === null) { name = prompt("Session Name:", "Comparison " + new Date().toLocaleTimeString()); if (!name) return; }
+            else { indexToSend = currentSessionIndex; name = historyData[currentSessionIndex].name; if (!confirm(`Overwrite "${name}"?`)) return; }
+            const cells = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value }));
+            fetch('/history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ index: indexToSend, name, cols: document.getElementById('col-count').value, rows: document.getElementById('row-count').value, cells }) })
+                .then(() => fetch('/history').then(r => r.json())).then(d => { historyData = d; if (asNew || currentSessionIndex === null) currentSessionIndex = 0; else currentSessionIndex = indexToSend; updateHistoryDropdown(); document.getElementById('btn-save').disabled = false; alert("Saved!"); });
+        }
+
+        function handleDragStart(e, index) { dragSrcIndex = index; e.target.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setDragImage(e.target, 0, 0); }
+        function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+        function handleDragEnter(e) { e.target.closest('.grid-cell').classList.add('drag-over'); }
+        function handleDragLeave(e) { e.target.closest('.grid-cell').classList.remove('drag-over'); }
+        function handleDrop(e, targetIndex) { e.stopPropagation(); e.preventDefault(); if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) swapCells(dragSrcIndex, targetIndex); return false; }
+        function handleDragEnd(e) { document.querySelectorAll('.grid-cell').forEach(c => { c.classList.remove('drag-over'); c.classList.remove('dragging'); }); dragSrcIndex = null; }
+        function swapCells(i1, i2) {
+            const c1 = activeCells[i1]; const c2 = activeCells[i2];
+            const tf = c1.fileInput.value; const tc = c1.captionInput.value;
+            c1.fileInput.value = c2.fileInput.value; c1.captionInput.value = c2.captionInput.value;
+            c2.fileInput.value = tf; c2.captionInput.value = tc;
+            loadMedia(c1.fileInput.value, c1.wrapper, i1); updateBrowserCaption(i1, c1.captionInput.value);
+            loadMedia(c2.fileInput.value, c2.wrapper, i2); updateBrowserCaption(i2, c2.captionInput.value);
+        }
+        function loadMedia(url, container, index) {
+            container.innerHTML = '';
+            if (!url) return;
+            const ext = url.split('.').pop().toLowerCase();
+            let el = ['mp4', 'webm', 'mov'].includes(ext) ? document.createElement('video') : document.createElement('img');
+            if (el.tagName === 'VIDEO') { el.controls = true; el.muted = true; el.loop = true; el.crossOrigin = "anonymous"; el.onplay = () => syncAction(el, 'play'); el.onpause = () => syncAction(el, 'pause'); el.onseeking = () => syncAction(el, 'seek'); }
+            el.src = url; container.appendChild(el); activeCells[index].mediaEl = el;
+        }
+        let isSyncing = false;
+        function syncAction(src, act) { if (!document.getElementById('sync-toggle').checked || isSyncing) return; isSyncing = true; document.querySelectorAll('video').forEach(v => { if (v !== src) { if (act === 'play') v.play(); if (act === 'pause') v.pause(); if (act === 'seek') v.currentTime = src.currentTime; } }); setTimeout(() => isSyncing = false, 50); }
+        function globalPlay() { document.querySelectorAll('video').forEach(v => v.play()); }
+        function globalPause() { document.querySelectorAll('video').forEach(v => v.pause()); }
+        function globalReset() { document.querySelectorAll('video').forEach(v => v.currentTime = 0); }
+
+        function takeSnapshot() {
+            const canvas = document.getElementById('hidden-canvas'); const ctx = canvas.getContext('2d');
+            const cols = parseInt(document.getElementById('col-count').value);
+            // Resolution with caption bar
+            const VID_W = 1280; const VID_H = 720; const CAP_H = 80; const TOTAL_H = VID_H + CAP_H;
+            const tR = VID_W / VID_H;
+
+            canvas.width = VID_W * cols; canvas.height = TOTAL_H * parseInt(document.getElementById('row-count').value);
+            ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            activeCells.forEach((c, idx) => {
+                const r = Math.floor(idx / cols), col = idx % cols, cX = col * VID_W, cY = r * TOTAL_H;
+
+                // 1. Draw Caption Bar
+                const capText = c.captionInput.value;
+                if (capText) {
+                    ctx.fillStyle = "#000"; ctx.fillRect(cX, cY, VID_W, CAP_H);
+                    ctx.fillStyle = "#fff"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                    ctx.fillText(capText, cX + VID_W / 2, cY + CAP_H / 2);
+                }
+
+                // 2. Draw Video (Below caption)
+                if (!c.mediaEl) return;
+                const sW = c.mediaEl.videoWidth || c.mediaEl.naturalWidth || 0, sH = c.mediaEl.videoHeight || c.mediaEl.naturalHeight || 0;
+                if (sW === 0) return;
+
+                // Calculate Aspect Fit
+                let dW, dH, dX, dY;
+                const vidY = cY + CAP_H; // Shift down by caption height
+
+                if ((sW / sH) > tR) { dW = VID_W; dH = VID_W / (sW / sH); dX = cX; dY = vidY + (VID_H - dH) / 2; }
+                else { dH = VID_H; dW = VID_H * (sW / sH); dY = vidY; dX = cX + (VID_W - dW) / 2; }
+
+                ctx.drawImage(c.mediaEl, dX, dY, dW, dH);
+            });
+            setTimeout(() => { const a = document.createElement('a'); a.download = 'grid_snapshot.png'; a.href = canvas.toDataURL("image/png"); a.click(); }, 100);
+        }
+
+        function renderServerSide() {
+            const cells = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value }));
+            const btn = document.querySelector('.btn-green'); const st = document.getElementById('render-status');
+            btn.disabled = true; btn.innerText = "⏳ Rendering..."; st.style.display = "inline";
+            fetch('/render', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cols: parseInt(document.getElementById('col-count').value), rows: parseInt(document.getElementById('row-count').value), cells }) })
+                .then(r => r.json()).then(d => { const a = document.createElement('a'); a.href = d.file; a.download = d.file; a.click(); })
+                .finally(() => { btn.disabled = false; btn.innerText = "⚡ MP4"; st.style.display = "none"; });
+        }
+    </script>
+</body>
+
+</html>
