@@ -91,7 +91,6 @@
             margin: 0 auto;
         }
 
-        /* Draggable Cell Styles */
         .grid-cell {
             background: #000;
             padding: 5px;
@@ -100,6 +99,57 @@
             flex-direction: column;
             border: 1px solid #333;
             transition: border-color 0.2s;
+            position: relative;
+        }
+
+        .grid-corner {
+            /* Empty top-left cell when headers are shown */
+        }
+
+        .grid-header-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid-header-cell input {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 1em;
+            text-align: center;
+            width: 100%;
+            padding: 4px 6px;
+        }
+
+        .grid-header-cell input:focus {
+            border-color: var(--accent-blue);
+            background: #222;
+        }
+
+        .grid-header-cell.row-header input {
+            text-align: right;
+        }
+
+        .sep-right::after {
+            content: '';
+            position: absolute;
+            right: calc(-5px - var(--sep-w, 1px) / 2);
+            top: -5px;
+            bottom: -5px;
+            width: 0;
+            border-right: var(--sep-w, 1px) var(--col-sep-style, solid) var(--sep-color, #666);
+        }
+
+        .sep-bottom::before {
+            content: '';
+            position: absolute;
+            bottom: calc(-5px - var(--sep-w, 1px) / 2);
+            left: -5px;
+            right: -5px;
+            height: 0;
+            border-bottom: var(--sep-w, 1px) var(--row-sep-style, solid) var(--sep-color, #666);
         }
 
         .grid-cell.drag-over {
@@ -128,10 +178,6 @@
             user-select: none;
         }
 
-        .drag-handle:hover {
-            color: #fff;
-        }
-
         .autocomplete-wrapper {
             flex-grow: 2;
             position: relative;
@@ -156,27 +202,27 @@
             color: #aaa;
         }
 
-        /* THE CUSTOM SUGGESTION BOX */
+        .flip-select {
+            background: #222;
+            border: 1px solid #444;
+            color: #aaa;
+            font-size: 0.8em;
+            padding: 1px 2px;
+            flex-shrink: 0;
+        }
+
         .suggestions-box {
             position: absolute;
             top: 100%;
             left: 0;
-            /* REMOVED: right: 0; (This was locking the width) */
-
-            /* NEW: Allow it to be wider than the cell */
             width: max-content;
-            /* Expands to fit long filenames */
             min-width: 100%;
-            /* At least as wide as the input */
             max-width: 600px;
-            /* Cap it so it doesn't go off screen */
-
             background: #252526;
             border: 1px solid var(--accent-blue);
             max-height: 400px;
             overflow-y: auto;
             z-index: 1000;
-            /* Ensure it floats above other cells */
             display: none;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
         }
@@ -185,7 +231,7 @@
             padding: 8px 10px;
             border-bottom: 1px solid #333;
             cursor: pointer;
-            font-size: 0.85em;
+            font-size: 0.9em;
             white-space: normal;
             word-wrap: break-word;
         }
@@ -199,7 +245,6 @@
             color: #4fc1ff;
         }
 
-        /* Media Area */
         .media-container {
             display: flex;
             flex-direction: column;
@@ -208,7 +253,6 @@
             min-height: 200px;
         }
 
-        /* The separate caption bar (Not overlay anymore) */
         .caption-bar {
             background: #000;
             color: #fff;
@@ -218,7 +262,6 @@
             font-size: 1.1em;
             border-bottom: 1px solid #222;
             display: none;
-            /* Hidden if empty */
         }
 
         .media-wrapper {
@@ -241,66 +284,500 @@
         #hidden-canvas {
             display: none;
         }
+
+        /* New Style for Conversion Button */
+        .convert-ui {
+            text-align: center;
+            color: #aaa;
+        }
+
+        .convert-ui p {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            width: 600px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal h2 button {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .modal h2 button:hover {
+            color: #fff;
+        }
+
+        .dir-list {
+            margin-bottom: 15px;
+        }
+
+        .dir-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: #333;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .dir-item input {
+            flex-grow: 1;
+            background: #222;
+        }
+
+        .dir-item .btn-remove {
+            background: #c42b1c;
+            border: none;
+            padding: 6px 10px;
+        }
+
+        .add-dir-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .add-dir-row input {
+            flex-grow: 1;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Comparison Stack */
+        .stack-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .stack-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #2d2d30;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .stack-panel-header strong {
+            margin-right: 5px;
+        }
+
+        .stack-panel-body {
+            padding: 0;
+        }
+
+        .stack-panel-body:empty::after {
+            content: 'No blocks added yet. Use "+ Add Current" or "+ Add from History" above.';
+            display: block;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .stack-block {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stack-block:last-child {
+            border-bottom: none;
+        }
+
+        .stack-block-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: #333;
+            font-size: 0.9em;
+        }
+
+        .stack-block-header .block-name {
+            flex-grow: 1;
+            font-weight: 600;
+        }
+
+        .stack-block-header button {
+            padding: 4px 8px;
+            font-size: 0.85em;
+            min-width: unset;
+        }
+
+        .stack-block-preview {
+            display: grid;
+            gap: 4px;
+            padding: 8px 15px;
+            background: #1a1a1a;
+        }
+
+        .stack-preview-cell {
+            background: #000;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+
+        .stack-preview-cell video,
+        .stack-preview-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .stack-preview-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            text-align: center;
+            font-size: 0.75em;
+            padding: 2px 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 
 <body>
-
     <div class="controls">
+        <div class="group">
+            <strong>Title:</strong>
+            <input type="text" id="video-title" placeholder="Video title (optional)" style="width: 200px;">
+        </div>
         <div class="group" style="min-width: 320px;">
             <strong>History:</strong>
             <select id="history-select" style="flex-grow: 1; max-width: 180px;">
                 <option value="">-- Select Session --</option>
             </select>
             <button onclick="loadSession()">Load</button>
+            <button onclick="renameHistoryEntry()" title="Rename selected history entry">Rename</button>
+            <button onclick="refreshFiles()" title="Re-scan folders for new files">🔄</button>
+            <button onclick="openDirsModal()" title="Configure search directories">⚙️</button>
             <button id="btn-save" onclick="saveSession(false)" disabled>Save</button>
             <button id="btn-save-as" class="btn-blue" onclick="saveSession(true)">Save As</button>
         </div>
+        
+        <div class="group">
+            <strong>Batch Replace:</strong>
+            <input id="find-txt" placeholder="Find (e.g. 00)" style="width: 80px;">
+            <span>→</span>
+            <input id="rep-txt" placeholder="Replace (e.g. 01)" style="width: 80px;">
+            <button class="btn-blue" onclick="applyBatchReplace()">Go</button>
+        </div>
+
         <div class="group">
             <strong>Grid:</strong>
             <input type="number" id="col-count" value="2" min="1" max="5" style="width: 40px;" onchange="initGrid()">
             <span>x</span>
             <input type="number" id="row-count" value="1" min="1" max="5" style="width: 40px;" onchange="initGrid()">
             <button onclick="initGrid()">Reset</button>
+            <button onclick="transposeGrid()">Transpose</button>
+            <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;"><input type="checkbox"
+                    id="show-headers" onchange="initGrid()"> Labels</label>
+        </div>
+        <div class="group">
+            <strong>Separators:</strong>
+            <label style="font-size:0.85em;color:#aaa;">Col</label>
+            <select id="sep-col-style" onchange="applySeparators()">
+                <option value="none">None</option>
+                <option value="solid">Solid</option>
+                <option value="dashed">Dashed</option>
+                <option value="dotted">Dotted</option>
+            </select>
+            <label style="font-size:0.85em;color:#aaa;">Row</label>
+            <select id="sep-row-style" onchange="applySeparators()">
+                <option value="none">None</option>
+                <option value="solid">Solid</option>
+                <option value="dashed">Dashed</option>
+                <option value="dotted">Dotted</option>
+            </select>
+            <input type="color" id="sep-color" value="#666666" onchange="applySeparators()" style="width:32px;padding:2px;">
+            <select id="sep-width" onchange="applySeparators()">
+                <option value="1px">1px</option>
+                <option value="2px">2px</option>
+                <option value="3px">3px</option>
+            </select>
         </div>
         <div class="group">
             <button onclick="globalPlay()">▶</button>
             <button onclick="globalPause()">⏸</button>
             <button onclick="globalReset()">⏮</button>
+            <button onclick="globalSkip(-5)" title="Skip back 5s">⏪5s</button>
+            <button onclick="globalSkip(5)" title="Skip forward 5s">5s⏩</button>
+            <label style="font-size:0.85em;color:#aaa;">Speed:</label>
+            <select id="speed-select" onchange="globalSetSpeed(parseFloat(this.value))" style="padding:6px 8px;">
+                <option value="0.25">0.25×</option>
+                <option value="0.5">0.5×</option>
+                <option value="1" selected>1×</option>
+                <option value="1.5">1.5×</option>
+                <option value="2">2×</option>
+                <option value="4">4×</option>
+            </select>
             <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;"><input type="checkbox"
                     id="sync-toggle" checked> Sync</label>
         </div>
         <div class="group" style="border: none; margin-left: auto;">
             <button onclick="takeSnapshot()">📷 PNG</button>
+            <label style="font-size:0.85em;color:#aaa;">FPS:</label>
+            <input type="number" id="render-fps" value="30" min="1" max="120" style="width:50px;" title="Output video FPS">
+            <label style="font-size:0.85em;color:#aaa;" title="Stretch/compress videos so all play for the same duration"><input type="checkbox" id="normalize-duration"> Norm. dur.</label>
             <button class="btn-green" onclick="renderServerSide()">⚡ MP4</button>
             <span id="render-status" style="display: none; font-size: 0.9em; color: #aaa;">Processing...</span>
         </div>
+    </div>
+    <!-- Seek / Playback Bar -->
+    <div id="seek-bar-row" style="background: var(--panel-bg); padding: 8px 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border: 1px solid var(--border-color);">
+        <span id="seek-time" style="font-size:0.85em;color:#aaa;min-width:38px;text-align:right;">0:00</span>
+        <input type="range" id="seek-bar" min="0" max="1000" value="0" style="flex-grow:1;cursor:pointer;accent-color:var(--accent-blue);">
+        <span id="seek-duration" style="font-size:0.85em;color:#aaa;min-width:38px;">0:00</span>
+    </div>
+    <!-- Comparison Stack Panel -->
+    <div class="stack-panel" id="stack-panel">
+        <div class="stack-panel-header">
+            <strong>Comparison Stack:</strong>
+            <button class="btn-blue" onclick="addCurrentToStack()">+ Add Current</button>
+            <select id="stack-history-select" style="max-width: 180px;">
+                <option value="">-- From History --</option>
+            </select>
+            <button onclick="addHistoryToStack()">+ Add</button>
+            <label style="font-size:0.85em;color:#aaa;margin-left:10px;">Direction:</label>
+            <select id="stack-direction">
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+            </select>
+            <div style="margin-left: auto; display: flex; gap: 8px;">
+                <button onclick="snapshotAllStack()">📷 All PNG</button>
+                <button class="btn-green" onclick="renderAllStack()">⚡ All MP4</button>
+                <span id="stack-render-status" style="display: none; font-size: 0.9em; color: #aaa;">Processing...</span>
+            </div>
+        </div>
+        <div class="stack-panel-body" id="stack-body"></div>
     </div>
 
     <div id="grid-container"></div>
     <canvas id="hidden-canvas"></canvas>
 
-    <script>
-        let fileList = [];
-        let activeCells = [];
-        let historyData = [];
-        let dragSrcIndex = null;
-        let currentSessionIndex = null;
+    <!-- Search Directories Modal -->
+    <div class="modal-overlay" id="dirs-modal">
+        <div class="modal">
+            <h2>
+                Search Directories
+                <button onclick="closeDirsModal()">&times;</button>
+            </h2>
+            <div class="dir-list" id="dir-list"></div>
+            <div class="add-dir-row">
+                <input type="text" id="new-dir-input" placeholder="/path/to/directory">
+                <button class="btn-blue" onclick="addDirectory()">Add</button>
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeDirsModal()">Cancel</button>
+                <button class="btn-green" onclick="saveSearchDirs()">Save & Refresh</button>
+            </div>
+        </div>
+    </div>
 
-        Promise.all([fetch('/files.json').then(r => r.json()), fetch('/history').then(r => r.json())]).then(([f, h]) => { fileList = f; historyData = h; updateHistoryDropdown(); initGrid(); }).catch(console.error);
+    <script>
+        let activeCells = []; let historyData = []; let dragSrcIndex = null; let currentSessionIndex = null;
+        let searchDebounceTimers = {};
+        let currentSearchDirs = [];
+        let colHeaders = []; let rowHeaders = [];
+        let colHeaderInputs = []; let rowHeaderInputs = [];
+        fetch('/history').then(r => r.json()).then(h => { historyData = h; updateHistoryDropdown(); updateStackHistoryDropdown(); initGrid(); }).catch(console.error);
+
+        // --- Search Directories Management ---
+        function openDirsModal() {
+            fetch('/search_dirs').then(r => r.json()).then(dirs => {
+                currentSearchDirs = dirs;
+                renderDirList();
+                document.getElementById('dirs-modal').classList.add('active');
+            });
+        }
+
+        function closeDirsModal() {
+            document.getElementById('dirs-modal').classList.remove('active');
+        }
+
+        function renderDirList() {
+            const container = document.getElementById('dir-list');
+            container.innerHTML = '';
+            currentSearchDirs.forEach((dir, idx) => {
+                const item = document.createElement('div');
+                item.className = 'dir-item';
+                item.innerHTML = `
+                    <input type="text" value="${dir}" onchange="updateDirectory(${idx}, this.value)">
+                    <button class="btn-remove" onclick="removeDirectory(${idx})">Remove</button>
+                `;
+                container.appendChild(item);
+            });
+            if (currentSearchDirs.length === 0) {
+                container.innerHTML = '<p style="color: #888; text-align: center;">No directories configured. Add one below.</p>';
+            }
+        }
+
+        function addDirectory() {
+            const input = document.getElementById('new-dir-input');
+            const dir = input.value.trim();
+            if (dir && !currentSearchDirs.includes(dir)) {
+                currentSearchDirs.push(dir);
+                renderDirList();
+                input.value = '';
+            }
+        }
+
+        function updateDirectory(idx, value) {
+            currentSearchDirs[idx] = value.trim();
+        }
+
+        function removeDirectory(idx) {
+            currentSearchDirs.splice(idx, 1);
+            renderDirList();
+        }
+
+        function saveSearchDirs() {
+            const btn = document.querySelector('.modal-actions .btn-green');
+            btn.disabled = true; btn.innerText = "Saving...";
+            fetch('/search_dirs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dirs: currentSearchDirs })
+            }).then(r => r.json()).then(d => {
+                btn.disabled = false; btn.innerText = "Save & Refresh";
+                closeDirsModal();
+                alert(`Directories saved! Indexed ${d.count} files.`);
+            });
+        }
+
+        // --- NEW: Batch Replace Function ---
+        function applyBatchReplace() {
+            const findStr = document.getElementById('find-txt').value;
+            const repStr = document.getElementById('rep-txt').value;
+            
+            if (!findStr) {
+                alert("Please enter text to find.");
+                return;
+            }
+
+            let count = 0;
+            activeCells.forEach((cell, index) => {
+                const currentVal = cell.fileInput.value;
+                if (currentVal && currentVal.includes(findStr)) {
+                    // Replace all occurrences
+                    const newVal = currentVal.replaceAll(findStr, repStr);
+                    cell.fileInput.value = newVal;
+                    // Trigger reload of the media
+                    loadMedia(newVal, cell.wrapper, index);
+                    count++;
+                }
+            });
+            
+            if (count === 0) {
+                alert(`No files found containing "${findStr}"`);
+            }
+        }
+
+        function refreshFiles() {
+            const btn = document.querySelector('button[title="Re-scan folders for new files"]');
+            btn.disabled = true; btn.innerText = "⏳";
+            fetch('/refresh_files').then(r=>r.json()).then(d => {
+                btn.disabled = false; btn.innerText = "🔄";
+                alert(`Files refreshed! Found ${d.count} items.`);
+            });
+        }
 
         function showSuggestions(input, index) {
-            const val = input.value.toLowerCase(); const box = activeCells[index].suggestionBox; box.innerHTML = '';
-            if (!val && document.activeElement !== input) { box.style.display = 'none'; return; }
-            const matches = fileList.filter(f => f.toLowerCase().includes(val)).slice(0, 50);
-            if (matches.length === 0) { box.style.display = 'none'; return; }
-            matches.forEach(fname => {
-                const div = document.createElement('div'); div.className = 'suggestion-item';
-                div.innerHTML = val ? fname.replace(new RegExp(`(${val})`, 'gi'), '<strong>$1</strong>') : fname;
-                div.onmousedown = (e) => { e.preventDefault(); input.value = fname; box.style.display = 'none'; loadMedia(fname, activeCells[index].wrapper, index); };
-                box.appendChild(div);
-            });
-            box.style.display = 'block';
+            const val = input.value.trim();
+            const box = activeCells[index].suggestionBox;
+
+            // Clear existing timer for this cell
+            if (searchDebounceTimers[index]) {
+                clearTimeout(searchDebounceTimers[index]);
+            }
+
+            if (!val && document.activeElement !== input) {
+                box.style.display = 'none';
+                return;
+            }
+
+            // Debounce: wait 200ms after user stops typing
+            searchDebounceTimers[index] = setTimeout(() => {
+                fetch(`/search?q=${encodeURIComponent(val)}&limit=50`)
+                    .then(r => r.json())
+                    .then(matches => {
+                        box.innerHTML = '';
+                        if (matches.length === 0) {
+                            box.style.display = 'none';
+                            return;
+                        }
+                        matches.forEach(fname => {
+                            const div = document.createElement('div');
+                            div.className = 'suggestion-item';
+                            const lowerVal = val.toLowerCase();
+                            div.innerHTML = val
+                                ? fname.replace(new RegExp(`(${val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<strong>$1</strong>')
+                                : fname;
+                            div.onmousedown = (e) => {
+                                e.preventDefault();
+                                input.value = fname;
+                                box.style.display = 'none';
+                                loadMedia(fname, activeCells[index].wrapper, index);
+                            };
+                            box.appendChild(div);
+                        });
+                        box.style.display = 'block';
+                    });
+            }, 200);
         }
         document.addEventListener('click', (e) => { activeCells.forEach(cell => { if (cell && cell.suggestionBox && !cell.wrapper.contains(e.target) && !cell.fileInput.contains(e.target)) cell.suggestionBox.style.display = 'none'; }); });
 
@@ -308,54 +785,328 @@
             const container = document.getElementById('grid-container');
             const cols = parseInt(document.getElementById('col-count').value) || 2;
             const rows = parseInt(document.getElementById('row-count').value) || 1;
-            let savedData = [];
-            if (keepContent && activeCells.length > 0) savedData = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value }));
+            const showHeaders = document.getElementById('show-headers').checked;
 
-            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; container.innerHTML = ''; activeCells = [];
+            let savedDataMap = {};
+            let oldCols = 0;
+            if (keepContent && activeCells.length > 0) {
+                oldCols = activeCells.length > 0 ? (Math.max(...activeCells.filter(c=>c).map(c=>c.col)) + 1) : cols;
+                activeCells.forEach(c => {
+                    if (!c) return;
+                    savedDataMap[c.row + ',' + c.col] = { file: c.fileInput.value, caption: c.captionInput.value, flip: c.flipSelect.value };
+                });
+            }
+            // Save header text before rebuild
+            let savedColHeaders = colHeaders.slice();
+            let savedRowHeaders = rowHeaders.slice();
+            if (keepContent && colHeaderInputs.length > 0) savedColHeaders = colHeaderInputs.map(inp => inp.value);
+            if (keepContent && rowHeaderInputs.length > 0) savedRowHeaders = rowHeaderInputs.map(inp => inp.value);
 
-            for (let i = 0; i < cols * rows; i++) {
-                const cell = document.createElement('div'); cell.className = 'grid-cell';
-                cell.draggable = true;
-                cell.ondragstart = (e) => handleDragStart(e, i); cell.ondragover = (e) => handleDragOver(e); cell.ondragenter = (e) => handleDragEnter(e); cell.ondragleave = (e) => handleDragLeave(e); cell.ondrop = (e) => handleDrop(e, i); cell.ondragend = (e) => handleDragEnd(e);
+            container.innerHTML = ''; activeCells = [];
+            colHeaderInputs = []; rowHeaderInputs = [];
 
-                const header = document.createElement('div'); header.className = 'cell-header';
-                const handle = document.createElement('div'); handle.className = 'drag-handle'; handle.innerHTML = '⣿';
-                const autoWrapper = document.createElement('div'); autoWrapper.className = 'autocomplete-wrapper';
-                const fileInput = document.createElement('input'); fileInput.className = 'file-input'; fileInput.placeholder = "Select file..."; fileInput.autocomplete = "off";
-                fileInput.oninput = () => showSuggestions(fileInput, i); fileInput.onfocus = () => showSuggestions(fileInput, i); fileInput.onchange = (e) => loadMedia(e.target.value, wrapper, i); fileInput.onmousedown = (e) => e.stopPropagation();
-                const suggestionBox = document.createElement('div'); suggestionBox.className = 'suggestions-box';
-                autoWrapper.appendChild(fileInput); autoWrapper.appendChild(suggestionBox);
-                const captionInput = document.createElement('input'); captionInput.className = 'caption-input'; captionInput.placeholder = "Caption";
-                captionInput.oninput = (e) => updateBrowserCaption(i, e.target.value); captionInput.onmousedown = (e) => e.stopPropagation();
+            if (showHeaders) {
+                container.style.gridTemplateColumns = `120px repeat(${cols}, 1fr)`;
+                // Corner cell
+                const corner = document.createElement('div');
+                corner.className = 'grid-corner';
+                container.appendChild(corner);
+                // Column header cells
+                for (let c = 0; c < cols; c++) {
+                    const hCell = document.createElement('div');
+                    hCell.className = 'grid-header-cell col-header';
+                    hCell.style.position = 'relative';
+                    const inp = document.createElement('input');
+                    inp.placeholder = `Col ${c + 1}`;
+                    inp.value = savedColHeaders[c] || '';
+                    hCell.appendChild(inp);
+                    container.appendChild(hCell);
+                    colHeaderInputs.push(inp);
+                }
+            } else {
+                container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            }
 
-                header.appendChild(handle); header.appendChild(autoWrapper); header.appendChild(captionInput); cell.appendChild(header);
+            for (let r = 0; r < rows; r++) {
+                // Row header cell
+                if (showHeaders) {
+                    const rCell = document.createElement('div');
+                    rCell.className = 'grid-header-cell row-header';
+                    rCell.style.position = 'relative';
+                    const inp = document.createElement('input');
+                    inp.placeholder = `Row ${r + 1}`;
+                    inp.value = savedRowHeaders[r] || '';
+                    rCell.appendChild(inp);
+                    container.appendChild(rCell);
+                    rowHeaderInputs.push(inp);
+                }
+                for (let c = 0; c < cols; c++) {
+                    const i = r * cols + c;
+                    const cell = document.createElement('div'); cell.className = 'grid-cell';
+                    cell.draggable = true;
+                    cell.ondragstart = (e) => handleDragStart(e, i); cell.ondragover = (e) => handleDragOver(e); cell.ondragenter = (e) => handleDragEnter(e); cell.ondragleave = (e) => handleDragLeave(e); cell.ondrop = (e) => handleDrop(e, i); cell.ondragend = (e) => handleDragEnd(e);
 
-                // New Layout for Caption on Top
-                const mediaContainer = document.createElement('div'); mediaContainer.className = 'media-container';
-                const captionBar = document.createElement('div'); captionBar.className = 'caption-bar'; captionBar.id = `caption-${i}`;
-                const wrapper = document.createElement('div'); wrapper.className = 'media-wrapper';
+                    const header = document.createElement('div'); header.className = 'cell-header';
+                    const handle = document.createElement('div'); handle.className = 'drag-handle'; handle.innerHTML = '⣿';
+                    const autoWrapper = document.createElement('div'); autoWrapper.className = 'autocomplete-wrapper';
+                    const fileInput = document.createElement('input'); fileInput.className = 'file-input'; fileInput.placeholder = "Select file..."; fileInput.autocomplete = "off";
+                    fileInput.oninput = () => showSuggestions(fileInput, i); fileInput.onfocus = () => showSuggestions(fileInput, i); fileInput.onchange = (e) => loadMedia(e.target.value, wrapper, i); fileInput.onmousedown = (e) => e.stopPropagation();
+                    const suggestionBox = document.createElement('div'); suggestionBox.className = 'suggestions-box';
+                    autoWrapper.appendChild(fileInput); autoWrapper.appendChild(suggestionBox);
+                    const captionInput = document.createElement('input'); captionInput.className = 'caption-input'; captionInput.placeholder = "Caption";
+                    captionInput.oninput = (e) => updateBrowserCaption(i, e.target.value); captionInput.onmousedown = (e) => e.stopPropagation();
+                    const flipSelect = document.createElement('select'); flipSelect.className = 'flip-select'; flipSelect.title = 'Flip';
+                    flipSelect.innerHTML = '<option value="">—</option><option value="hflip">⇔H</option><option value="vflip">⇕V</option><option value="hflip,vflip">⇔⇕</option>';
+                    flipSelect.onmousedown = (e) => e.stopPropagation();
+                    flipSelect.onchange = () => applyFlipPreview(i);
 
-                mediaContainer.appendChild(captionBar);
-                mediaContainer.appendChild(wrapper);
-                cell.appendChild(mediaContainer);
-                container.appendChild(cell);
+                    header.appendChild(handle); header.appendChild(autoWrapper); header.appendChild(captionInput); header.appendChild(flipSelect); cell.appendChild(header);
 
-                activeCells[i] = { cellEl: cell, wrapper, fileInput, captionInput, suggestionBox, captionBar, mediaEl: null };
+                    const mediaContainer = document.createElement('div'); mediaContainer.className = 'media-container';
+                    const captionBar = document.createElement('div'); captionBar.className = 'caption-bar'; captionBar.id = `caption-${i}`;
+                    const wrapper = document.createElement('div'); wrapper.className = 'media-wrapper';
+                    mediaContainer.appendChild(captionBar); mediaContainer.appendChild(wrapper); cell.appendChild(mediaContainer); container.appendChild(cell);
 
-                if (savedData[i]) {
-                    fileInput.value = savedData[i].file; captionInput.value = savedData[i].caption;
-                    if (savedData[i].file) loadMedia(savedData[i].file, wrapper, i);
-                    if (savedData[i].caption) updateBrowserCaption(i, savedData[i].caption);
+                    activeCells[i] = { cellEl: cell, wrapper, fileInput, captionInput, flipSelect, suggestionBox, captionBar, mediaEl: null, row: r, col: c };
+                    const key = r + ',' + c;
+                    if (savedDataMap[key]) {
+                        fileInput.value = savedDataMap[key].file; captionInput.value = savedDataMap[key].caption;
+                        if (savedDataMap[key].flip) { flipSelect.value = savedDataMap[key].flip; }
+                        if (savedDataMap[key].file) loadMedia(savedDataMap[key].file, wrapper, i);
+                        if (savedDataMap[key].caption) updateBrowserCaption(i, savedDataMap[key].caption);
+                        if (savedDataMap[key].flip) applyFlipPreview(i);
+                    }
                 }
             }
+            // Sync header arrays
+            colHeaders = colHeaderInputs.map(inp => inp.value);
+            rowHeaders = rowHeaderInputs.map(inp => inp.value);
+            applySeparators();
         }
 
-        function updateBrowserCaption(i, t) {
-            const bar = activeCells[i].captionBar;
-            if (t) { bar.style.display = 'block'; bar.textContent = t; }
-            else { bar.style.display = 'none'; }
+        function transposeGrid() {
+            const cols = parseInt(document.getElementById('col-count').value) || 2;
+            const rows = parseInt(document.getElementById('row-count').value) || 1;
+            // Build transposed data map: new (r,c) = old (c,r)
+            const transposedMap = {};
+            activeCells.forEach(c => {
+                if (!c) return;
+                const file = c.fileInput.value;
+                const caption = c.captionInput.value;
+                const flip = c.flipSelect.value;
+                if (file || caption) transposedMap[c.col + ',' + c.row] = { file, caption, flip };
+            });
+            // Swap col/row headers
+            const oldColHeaders = colHeaderInputs.map(inp => inp.value);
+            const oldRowHeaders = rowHeaderInputs.map(inp => inp.value);
+            colHeaders = oldRowHeaders;
+            rowHeaders = oldColHeaders;
+            // Swap dimensions
+            document.getElementById('col-count').value = rows;
+            document.getElementById('row-count').value = cols;
+            // Rebuild grid without keepContent, then restore manually
+            initGrid(false);
+            const newCols = rows;
+            activeCells.forEach(c => {
+                if (!c) return;
+                const key = c.row + ',' + c.col;
+                if (transposedMap[key]) {
+                    c.fileInput.value = transposedMap[key].file;
+                    c.captionInput.value = transposedMap[key].caption;
+                    const i = c.row * newCols + c.col;
+                    if (transposedMap[key].file) loadMedia(transposedMap[key].file, c.wrapper, i);
+                    if (transposedMap[key].caption) updateBrowserCaption(i, transposedMap[key].caption);
+                }
+            });
+            // Restore swapped headers
+            colHeaderInputs.forEach((inp, i) => { inp.value = colHeaders[i] || ''; });
+            rowHeaderInputs.forEach((inp, i) => { inp.value = rowHeaders[i] || ''; });
         }
 
+        function applySeparators() {
+            const container = document.getElementById('grid-container');
+            const colStyle = document.getElementById('sep-col-style').value;
+            const rowStyle = document.getElementById('sep-row-style').value;
+            const sepColor = document.getElementById('sep-color').value;
+            const sepWidth = document.getElementById('sep-width').value;
+
+            container.style.setProperty('--col-sep-style', colStyle);
+            container.style.setProperty('--row-sep-style', rowStyle);
+            container.style.setProperty('--sep-color', sepColor);
+            container.style.setProperty('--sep-w', sepWidth);
+
+            const cols = parseInt(document.getElementById('col-count').value) || 2;
+            const rows = parseInt(document.getElementById('row-count').value) || 1;
+
+            // Toggle sep classes on data cells
+            activeCells.forEach(c => {
+                if (!c) return;
+                c.cellEl.classList.toggle('sep-right', colStyle !== 'none' && c.col < cols - 1);
+                c.cellEl.classList.toggle('sep-bottom', rowStyle !== 'none' && c.row < rows - 1);
+            });
+
+            // Toggle sep classes on header cells
+            colHeaderInputs.forEach((inp, idx) => {
+                const hCell = inp.parentElement;
+                hCell.classList.toggle('sep-right', colStyle !== 'none' && idx < cols - 1);
+            });
+            rowHeaderInputs.forEach((inp, idx) => {
+                const hCell = inp.parentElement;
+                hCell.classList.toggle('sep-bottom', rowStyle !== 'none' && idx < rows - 1);
+            });
+        }
+
+        function loadMedia(url, container, index) {
+            container.innerHTML = '';
+            if (!url) return;
+
+            if (url.endsWith('/')) {
+                const div = document.createElement('div');
+                div.className = 'convert-ui';
+                const seqFpsId = `seq-fps-${index}`;
+                const seqGrayId = `seq-gray-${index}`;
+                div.innerHTML = `<p>📁 Sequence Detected</p><div style="margin-top:6px;"><label style="font-size:0.8em;color:#888;">FPS: </label><input type="number" id="${seqFpsId}" value="30" min="1" max="120" style="width:50px;"><label style="font-size:0.8em;color:#888;margin-left:10px;"><input type="checkbox" id="${seqGrayId}"> Grayscale</label></div>`;
+                const btn = document.createElement('button');
+                btn.className = 'btn-blue';
+                btn.innerText = "🎞️ Generate Video";
+                btn.onclick = () => {
+                    const fps = parseInt(document.getElementById(seqFpsId).value) || 30;
+                    const grayscale = document.getElementById(seqGrayId).checked;
+                    btn.disabled = true; btn.innerText = "⏳ Generating...";
+                    fetch('/convert_sequence', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ folder: url, fps, grayscale })
+                    }).then(r => r.json()).then(d => {
+                        if (d.file) {
+                            activeCells[index].fileInput.value = d.file;
+                            loadMedia(d.file, container, index);
+                        } else { alert("Conversion Failed"); btn.disabled = false; btn.innerText = "Retry"; }
+                    });
+                };
+                div.appendChild(btn);
+                container.appendChild(div);
+                return;
+            }
+
+            const ext = url.split('.').pop().toLowerCase();
+
+            // Handle H5 event files
+            if (ext === 'h5') {
+                const div = document.createElement('div');
+                div.className = 'convert-ui';
+                div.innerHTML = `<p>📊 H5 Event File</p><p style="font-size:0.8em;color:#888;">Loading info...</p>`;
+                container.appendChild(div);
+
+                // Get H5 info first
+                fetch('/h5_info', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: url })
+                }).then(r => r.json()).then(info => {
+                    if (info.error) {
+                        div.innerHTML = `<p>⚠️ Error: ${info.error}</p>`;
+                        return;
+                    }
+                    const duration = info.duration.toFixed(2);
+                    const numEvents = (info.num_events / 1e6).toFixed(2);
+                    div.innerHTML = `
+                        <p>📊 H5 Event File</p>
+                        <p style="font-size:0.8em;color:#888;">${numEvents}M events | ${duration}s | ${info.width}x${info.height}</p>
+                        <div style="margin-top:10px;">
+                            <label style="font-size:0.8em;color:#888;">Frames: </label>
+                            <input type="number" id="h5-frames-${index}" value="100" min="10" max="1000" style="width:60px;">
+                            <label style="font-size:0.8em;color:#888;margin-left:10px;">FPS: </label>
+                            <input type="number" id="h5-fps-${index}" value="30" min="1" max="120" style="width:50px;">
+                            <label style="font-size:0.8em;color:#888;margin-left:10px;"><input type="checkbox" id="h5-gray-${index}"> Grayscale</label>
+                        </div>
+                    `;
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-blue';
+                    btn.style.marginTop = '10px';
+                    btn.innerText = "🎬 Generate Event Video";
+                    btn.onclick = () => {
+                        const numFrames = parseInt(document.getElementById(`h5-frames-${index}`).value) || 100;
+                        const fps = parseInt(document.getElementById(`h5-fps-${index}`).value) || 30;
+                        const grayscale = document.getElementById(`h5-gray-${index}`).checked;
+                        btn.disabled = true; btn.innerText = "⏳ Converting events...";
+                        fetch('/convert_h5', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ file: url, num_frames: numFrames, fps: fps, grayscale })
+                        }).then(r => r.json()).then(d => {
+                            if (d.status === 'ok' && d.file) {
+                                activeCells[index].fileInput.value = d.file;
+                                loadMedia(d.file, container, index);
+                            } else {
+                                alert("Conversion failed: " + (d.message || "Unknown error"));
+                                btn.disabled = false; btn.innerText = "🎬 Retry";
+                            }
+                        }).catch(err => {
+                            alert("Conversion failed: " + err);
+                            btn.disabled = false; btn.innerText = "🎬 Retry";
+                        });
+                    };
+                    div.appendChild(btn);
+                });
+                return;
+            }
+            let el = ['mp4', 'webm', 'mov'].includes(ext) ? document.createElement('video') : document.createElement('img');
+            if (el.tagName === 'VIDEO') {
+                el.controls = true; el.muted = true; el.loop = true; el.crossOrigin = "anonymous";
+                el.playbackRate = parseFloat(document.getElementById('speed-select')?.value || 1);
+                el.onplay = () => syncAction(el, 'play');
+                el.onpause = () => syncAction(el, 'pause');
+                el.onseeking = () => { if (!_programmaticSeek) syncAction(el, 'seek'); };
+                // Handle codec errors - show convert button
+                el.onerror = () => showConvertUI(url, container, index, "Video codec not supported by browser");
+            }
+            el.src = url; container.appendChild(el); activeCells[index].mediaEl = el;
+            applyFlipPreview(index);
+        }
+
+        function showConvertUI(url, container, index, message) {
+            container.innerHTML = '';
+            const div = document.createElement('div');
+            div.className = 'convert-ui';
+            const cvFpsId = `cv-fps-${index}`;
+            const cvGrayId = `cv-gray-${index}`;
+            div.innerHTML = `<p>⚠️ ${message}</p><div style="margin-top:6px;"><label style="font-size:0.8em;color:#888;">FPS (optional): </label><input type="number" id="${cvFpsId}" placeholder="src" min="1" max="120" style="width:60px;" title="Leave empty to keep source FPS"><label style="font-size:0.8em;color:#888;margin-left:10px;"><input type="checkbox" id="${cvGrayId}"> Grayscale</label></div>`;
+            const btn = document.createElement('button');
+            btn.className = 'btn-blue';
+            btn.innerText = "🔄 Convert for Browser";
+            btn.onclick = () => {
+                const fpsVal = document.getElementById(cvFpsId).value;
+                const fps = fpsVal ? parseInt(fpsVal) : null;
+                const grayscale = document.getElementById(cvGrayId).checked;
+                btn.disabled = true; btn.innerText = "⏳ Converting...";
+                fetch('/convert_video', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: url, ...(fps !== null && { fps }), grayscale })
+                }).then(r => r.json()).then(d => {
+                    if (d.status === 'ok' && d.file) {
+                        activeCells[index].fileInput.value = d.file;
+                        loadMedia(d.file, container, index);
+                    } else {
+                        alert("Conversion failed: " + (d.message || "Unknown error"));
+                        btn.disabled = false; btn.innerText = "🔄 Retry";
+                    }
+                }).catch(err => {
+                    alert("Conversion failed: " + err);
+                    btn.disabled = false; btn.innerText = "🔄 Retry";
+                });
+            };
+            div.appendChild(btn);
+            container.appendChild(div);
+        }
+
+        function updateBrowserCaption(i, t) { const bar = activeCells[i].captionBar; if (t) { bar.style.display = 'block'; bar.textContent = t; } else { bar.style.display = 'none'; } }
+        function applyFlipPreview(i) {
+            const cell = activeCells[i]; if (!cell) return;
+            const flip = cell.flipSelect.value;
+            const xScale = (flip === 'hflip' || flip === 'hflip,vflip') ? -1 : 1;
+            const yScale = (flip === 'vflip' || flip === 'hflip,vflip') ? -1 : 1;
+            const transform = (xScale === 1 && yScale === 1) ? '' : `scaleX(${xScale}) scaleY(${yScale})`;
+            const media = cell.wrapper.querySelector('video, img');
+            if (media) media.style.transform = transform;
+        }
         function updateHistoryDropdown() {
             const sel = document.getElementById('history-select'); sel.innerHTML = '<option value="">-- Select Session --</option>';
             historyData.forEach((item, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.textContent = `${item.name} (${new Date(item.timestamp * 1000).toLocaleDateString()})`; sel.appendChild(opt); });
@@ -364,19 +1115,66 @@
         function loadSession() {
             const idxStr = document.getElementById('history-select').value; if (idxStr === "") return;
             currentSessionIndex = parseInt(idxStr); const s = historyData[currentSessionIndex];
-            document.getElementById('col-count').value = s.cols; document.getElementById('row-count').value = s.rows; initGrid(false);
-            s.cells.forEach((d, i) => { if (activeCells[i]) { activeCells[i].fileInput.value = d.file; activeCells[i].captionInput.value = d.caption; loadMedia(d.file, activeCells[i].wrapper, i); updateBrowserCaption(i, d.caption); } });
-            const saveBtn = document.getElementById('btn-save'); saveBtn.disabled = false; saveBtn.innerText = "Save";
+            document.getElementById('col-count').value = s.cols; document.getElementById('row-count').value = s.rows;
+
+            // Restore title, fps, and header/separator settings (backward-compatible)
+            document.getElementById('video-title').value = s.title || '';
+            document.getElementById('render-fps').value = s.fps || 30;
+            document.getElementById('normalize-duration').checked = s.normalizeDuration || false;
+            if (s.showHeaders !== undefined) document.getElementById('show-headers').checked = s.showHeaders;
+            else document.getElementById('show-headers').checked = false;
+            if (s.colHeaders) colHeaders = s.colHeaders;
+            else colHeaders = [];
+            if (s.rowHeaders) rowHeaders = s.rowHeaders;
+            else rowHeaders = [];
+            if (s.separators) {
+                document.getElementById('sep-col-style').value = s.separators.colStyle || 'none';
+                document.getElementById('sep-row-style').value = s.separators.rowStyle || 'none';
+                document.getElementById('sep-color').value = s.separators.color || '#666666';
+                document.getElementById('sep-width').value = s.separators.width || '1px';
+            } else {
+                document.getElementById('sep-col-style').value = 'none';
+                document.getElementById('sep-row-style').value = 'none';
+                document.getElementById('sep-color').value = '#666666';
+                document.getElementById('sep-width').value = '1px';
+            }
+
+            // Pre-populate savedColHeaders/savedRowHeaders so initGrid picks them up
+            colHeaderInputs = []; rowHeaderInputs = [];
+            initGrid(false);
+            s.cells.forEach((d, i) => { if (activeCells[i]) { activeCells[i].fileInput.value = d.file; activeCells[i].captionInput.value = d.caption; activeCells[i].flipSelect.value = d.flip || ''; loadMedia(d.file, activeCells[i].wrapper, i); updateBrowserCaption(i, d.caption); applyFlipPreview(i); } });
+            // Restore header text into inputs after grid rebuild
+            if (s.colHeaders) colHeaderInputs.forEach((inp, idx) => { if (s.colHeaders[idx]) inp.value = s.colHeaders[idx]; });
+            if (s.rowHeaders) rowHeaderInputs.forEach((inp, idx) => { if (s.rowHeaders[idx]) inp.value = s.rowHeaders[idx]; });
+            applySeparators();
+            document.getElementById('btn-save').disabled = false;
         }
         function saveSession(asNew) {
             let name; let indexToSend = null;
             if (asNew || currentSessionIndex === null) { name = prompt("Session Name:", "Comparison " + new Date().toLocaleTimeString()); if (!name) return; }
             else { indexToSend = currentSessionIndex; name = historyData[currentSessionIndex].name; if (!confirm(`Overwrite "${name}"?`)) return; }
-            const cells = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value }));
-            fetch('/history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ index: indexToSend, name, cols: document.getElementById('col-count').value, rows: document.getElementById('row-count').value, cells }) })
-                .then(() => fetch('/history').then(r => r.json())).then(d => { historyData = d; if (asNew || currentSessionIndex === null) currentSessionIndex = 0; else currentSessionIndex = indexToSend; updateHistoryDropdown(); document.getElementById('btn-save').disabled = false; alert("Saved!"); });
+            const cells = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value, flip: c.flipSelect.value }));
+            const sessionData = {
+                index: indexToSend, name,
+                cols: document.getElementById('col-count').value,
+                rows: document.getElementById('row-count').value,
+                cells,
+                title: document.getElementById('video-title').value,
+                fps: parseInt(document.getElementById('render-fps').value) || 30,
+                normalizeDuration: document.getElementById('normalize-duration').checked,
+                showHeaders: document.getElementById('show-headers').checked,
+                colHeaders: colHeaderInputs.map(inp => inp.value),
+                rowHeaders: rowHeaderInputs.map(inp => inp.value),
+                separators: {
+                    colStyle: document.getElementById('sep-col-style').value,
+                    rowStyle: document.getElementById('sep-row-style').value,
+                    color: document.getElementById('sep-color').value,
+                    width: document.getElementById('sep-width').value
+                }
+            };
+            fetch('/history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sessionData) })
+                .then(() => fetch('/history').then(r => r.json())).then(d => { historyData = d; if (asNew || currentSessionIndex === null) currentSessionIndex = 0; else currentSessionIndex = indexToSend; updateHistoryDropdown(); updateStackHistoryDropdown(); document.getElementById('btn-save').disabled = false; alert("Saved!"); });
         }
-
         function handleDragStart(e, index) { dragSrcIndex = index; e.target.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setDragImage(e.target, 0, 0); }
         function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
         function handleDragEnter(e) { e.target.closest('.grid-cell').classList.add('drag-over'); }
@@ -385,72 +1183,580 @@
         function handleDragEnd(e) { document.querySelectorAll('.grid-cell').forEach(c => { c.classList.remove('drag-over'); c.classList.remove('dragging'); }); dragSrcIndex = null; }
         function swapCells(i1, i2) {
             const c1 = activeCells[i1]; const c2 = activeCells[i2];
-            const tf = c1.fileInput.value; const tc = c1.captionInput.value;
-            c1.fileInput.value = c2.fileInput.value; c1.captionInput.value = c2.captionInput.value;
-            c2.fileInput.value = tf; c2.captionInput.value = tc;
-            loadMedia(c1.fileInput.value, c1.wrapper, i1); updateBrowserCaption(i1, c1.captionInput.value);
-            loadMedia(c2.fileInput.value, c2.wrapper, i2); updateBrowserCaption(i2, c2.captionInput.value);
-        }
-        function loadMedia(url, container, index) {
-            container.innerHTML = '';
-            if (!url) return;
-            const ext = url.split('.').pop().toLowerCase();
-            let el = ['mp4', 'webm', 'mov'].includes(ext) ? document.createElement('video') : document.createElement('img');
-            if (el.tagName === 'VIDEO') { el.controls = true; el.muted = true; el.loop = true; el.crossOrigin = "anonymous"; el.onplay = () => syncAction(el, 'play'); el.onpause = () => syncAction(el, 'pause'); el.onseeking = () => syncAction(el, 'seek'); }
-            el.src = url; container.appendChild(el); activeCells[index].mediaEl = el;
+            const tf = c1.fileInput.value; const tc = c1.captionInput.value; const tfl = c1.flipSelect.value;
+            c1.fileInput.value = c2.fileInput.value; c1.captionInput.value = c2.captionInput.value; c1.flipSelect.value = c2.flipSelect.value;
+            c2.fileInput.value = tf; c2.captionInput.value = tc; c2.flipSelect.value = tfl;
+            loadMedia(c1.fileInput.value, c1.wrapper, i1); updateBrowserCaption(i1, c1.captionInput.value); applyFlipPreview(i1);
+            loadMedia(c2.fileInput.value, c2.wrapper, i2); updateBrowserCaption(i2, c2.captionInput.value); applyFlipPreview(i2);
         }
         let isSyncing = false;
+        let _programmaticSeek = false;
         function syncAction(src, act) { if (!document.getElementById('sync-toggle').checked || isSyncing) return; isSyncing = true; document.querySelectorAll('video').forEach(v => { if (v !== src) { if (act === 'play') v.play(); if (act === 'pause') v.pause(); if (act === 'seek') v.currentTime = src.currentTime; } }); setTimeout(() => isSyncing = false, 50); }
         function globalPlay() { document.querySelectorAll('video').forEach(v => v.play()); }
         function globalPause() { document.querySelectorAll('video').forEach(v => v.pause()); }
-        function globalReset() { document.querySelectorAll('video').forEach(v => v.currentTime = 0); }
-
+        function globalReset() { _programmaticSeek = true; document.querySelectorAll('video').forEach(v => v.currentTime = 0); setTimeout(() => { _programmaticSeek = false; }, 500); }
         function takeSnapshot() {
             const canvas = document.getElementById('hidden-canvas'); const ctx = canvas.getContext('2d');
             const cols = parseInt(document.getElementById('col-count').value);
-            // Resolution with caption bar
-            const VID_W = 1280; const VID_H = 720; const CAP_H = 80; const TOTAL_H = VID_H + CAP_H;
-            const tR = VID_W / VID_H;
+            const rows = parseInt(document.getElementById('row-count').value);
+            const VID_W = 1280; const VID_H = 720; const CAP_H = 80; const TOTAL_H = VID_H + CAP_H; const tR = VID_W / VID_H;
 
-            canvas.width = VID_W * cols; canvas.height = TOTAL_H * parseInt(document.getElementById('row-count').value);
+            // Check title and headers
+            const videoTitle = document.getElementById('video-title').value.trim();
+            const TITLE_H = videoTitle ? 120 : 0;
+            const currentColHeaders = colHeaderInputs.map(inp => inp.value);
+            const currentRowHeaders = rowHeaderInputs.map(inp => inp.value);
+            const hasColHeaders = currentColHeaders.some(t => t.trim());
+            const hasRowHeaders = currentRowHeaders.some(t => t.trim());
+            const HDR_W = hasRowHeaders ? 300 : 0;
+            const HDR_H = hasColHeaders ? 80 : 0;
+            const CONTENT_Y_OFF = TITLE_H + HDR_H;
+
+            canvas.width = HDR_W + VID_W * cols;
+            canvas.height = TITLE_H + HDR_H + TOTAL_H * rows;
             ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Draw title
+            if (videoTitle) {
+                ctx.fillStyle = "#fff"; ctx.font = "bold 64px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                ctx.fillText(videoTitle, canvas.width / 2, TITLE_H / 2);
+            }
+
+            // Draw column headers
+            if (hasColHeaders) {
+                ctx.fillStyle = "#fff"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                currentColHeaders.forEach((text, c) => {
+                    if (text.trim()) {
+                        ctx.fillText(text, HDR_W + c * VID_W + VID_W / 2, TITLE_H + HDR_H / 2);
+                    }
+                });
+            }
+
+            // Draw row headers
+            if (hasRowHeaders) {
+                ctx.fillStyle = "#fff"; ctx.font = "bold 36px Arial"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+                currentRowHeaders.forEach((text, r) => {
+                    if (text.trim()) {
+                        const rowCenterY = CONTENT_Y_OFF + r * TOTAL_H + TOTAL_H / 2;
+                        ctx.fillText(text, HDR_W - 20, rowCenterY);
+                    }
+                });
+            }
+
+            // Draw media cells offset by title + header dimensions
             activeCells.forEach((c, idx) => {
-                const r = Math.floor(idx / cols), col = idx % cols, cX = col * VID_W, cY = r * TOTAL_H;
-
-                // 1. Draw Caption Bar
+                const r = Math.floor(idx / cols), col = idx % cols;
+                const cX = HDR_W + col * VID_W, cY = CONTENT_Y_OFF + r * TOTAL_H;
                 const capText = c.captionInput.value;
-                if (capText) {
-                    ctx.fillStyle = "#000"; ctx.fillRect(cX, cY, VID_W, CAP_H);
-                    ctx.fillStyle = "#fff"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-                    ctx.fillText(capText, cX + VID_W / 2, cY + CAP_H / 2);
-                }
-
-                // 2. Draw Video (Below caption)
+                if (capText) { ctx.fillStyle = "#000"; ctx.fillRect(cX, cY, VID_W, CAP_H); ctx.fillStyle = "#fff"; ctx.font = "bold 40px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(capText, cX + VID_W / 2, cY + CAP_H / 2); }
                 if (!c.mediaEl) return;
                 const sW = c.mediaEl.videoWidth || c.mediaEl.naturalWidth || 0, sH = c.mediaEl.videoHeight || c.mediaEl.naturalHeight || 0;
                 if (sW === 0) return;
-
-                // Calculate Aspect Fit
-                let dW, dH, dX, dY;
-                const vidY = cY + CAP_H; // Shift down by caption height
-
-                if ((sW / sH) > tR) { dW = VID_W; dH = VID_W / (sW / sH); dX = cX; dY = vidY + (VID_H - dH) / 2; }
-                else { dH = VID_H; dW = VID_H * (sW / sH); dY = vidY; dX = cX + (VID_W - dW) / 2; }
-
+                let dW, dH, dX, dY; const vidY = cY + CAP_H;
+                if ((sW / sH) > tR) { dW = VID_W; dH = VID_W / (sW / sH); dX = cX; dY = vidY + (VID_H - dH) / 2; } else { dH = VID_H; dW = VID_H * (sW / sH); dY = vidY; dX = cX + (VID_W - dW) / 2; }
                 ctx.drawImage(c.mediaEl, dX, dY, dW, dH);
             });
+
+            // Draw separator lines
+            const colSepStyle = document.getElementById('sep-col-style').value;
+            const rowSepStyle = document.getElementById('sep-row-style').value;
+            const sepColor = document.getElementById('sep-color').value;
+            const sepWidth = parseInt(document.getElementById('sep-width').value);
+
+            function setDashStyle(ctx, style) {
+                if (style === 'dashed') ctx.setLineDash([12, 6]);
+                else if (style === 'dotted') ctx.setLineDash([3, 4]);
+                else ctx.setLineDash([]);
+            }
+
+            ctx.strokeStyle = sepColor;
+            ctx.lineWidth = sepWidth;
+
+            // Column separators (vertical lines between columns)
+            if (colSepStyle !== 'none') {
+                setDashStyle(ctx, colSepStyle);
+                for (let c = 1; c < cols; c++) {
+                    const x = HDR_W + c * VID_W;
+                    ctx.beginPath();
+                    ctx.moveTo(x, CONTENT_Y_OFF);
+                    ctx.lineTo(x, CONTENT_Y_OFF + rows * TOTAL_H);
+                    ctx.stroke();
+                }
+            }
+
+            // Row separators (horizontal lines between rows)
+            if (rowSepStyle !== 'none') {
+                setDashStyle(ctx, rowSepStyle);
+                for (let r = 1; r < rows; r++) {
+                    const y = CONTENT_Y_OFF + r * TOTAL_H;
+                    ctx.beginPath();
+                    ctx.moveTo(HDR_W, y);
+                    ctx.lineTo(HDR_W + cols * VID_W, y);
+                    ctx.stroke();
+                }
+            }
+            ctx.setLineDash([]);
+
             setTimeout(() => { const a = document.createElement('a'); a.download = 'grid_snapshot.png'; a.href = canvas.toDataURL("image/png"); a.click(); }, 100);
         }
-
         function renderServerSide() {
-            const cells = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value }));
+            const cells = activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value, flip: c.flipSelect.value }));
+            const currentColHeaders = colHeaderInputs.map(inp => inp.value);
+            const currentRowHeaders = rowHeaderInputs.map(inp => inp.value);
+            const separators = {
+                colStyle: document.getElementById('sep-col-style').value,
+                rowStyle: document.getElementById('sep-row-style').value,
+                color: document.getElementById('sep-color').value,
+                width: parseInt(document.getElementById('sep-width').value)
+            };
             const btn = document.querySelector('.btn-green'); const st = document.getElementById('render-status');
             btn.disabled = true; btn.innerText = "⏳ Rendering..."; st.style.display = "inline";
-            fetch('/render', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cols: parseInt(document.getElementById('col-count').value), rows: parseInt(document.getElementById('row-count').value), cells }) })
+            fetch('/render', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cols: parseInt(document.getElementById('col-count').value), rows: parseInt(document.getElementById('row-count').value), cells, colHeaders: currentColHeaders, rowHeaders: currentRowHeaders, separators, title: document.getElementById('video-title').value, fps: parseInt(document.getElementById('render-fps').value) || 30, normalizeDuration: document.getElementById('normalize-duration').checked }) })
                 .then(r => r.json()).then(d => { const a = document.createElement('a'); a.href = d.file; a.download = d.file; a.click(); })
                 .finally(() => { btn.disabled = false; btn.innerText = "⚡ MP4"; st.style.display = "none"; });
         }
+        // --- Rename History ---
+        function renameHistoryEntry() {
+            const sel = document.getElementById('history-select');
+            const idx = parseInt(sel.value);
+            if (isNaN(idx)) { alert("Select a history entry first."); return; }
+            const oldName = historyData[idx].name;
+            const newName = prompt("New name:", oldName);
+            if (!newName || newName === oldName) return;
+            fetch('/rename_history', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index: idx, name: newName })
+            }).then(r => r.json()).then(d => {
+                if (d.status === 'ok') {
+                    historyData[idx].name = newName;
+                    updateHistoryDropdown();
+                    updateStackHistoryDropdown();
+                }
+            });
+        }
+
+        // --- Comparison Stack ---
+        let comparisonStack = [];
+
+        function updateStackHistoryDropdown() {
+            const sel = document.getElementById('stack-history-select');
+            sel.innerHTML = '<option value="">-- From History --</option>';
+            historyData.forEach((item, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `${item.name} (${new Date(item.timestamp * 1000).toLocaleDateString()})`;
+                sel.appendChild(opt);
+            });
+        }
+
+        function captureCurrentSessionData() {
+            return {
+                name: document.getElementById('video-title').value || 'Current View',
+                cols: parseInt(document.getElementById('col-count').value),
+                rows: parseInt(document.getElementById('row-count').value),
+                cells: activeCells.map(c => ({ file: c.fileInput.value, caption: c.captionInput.value, flip: c.flipSelect.value })),
+                title: document.getElementById('video-title').value,
+                fps: parseInt(document.getElementById('render-fps').value) || 30,
+                normalizeDuration: document.getElementById('normalize-duration').checked,
+                showHeaders: document.getElementById('show-headers').checked,
+                colHeaders: colHeaderInputs.map(inp => inp.value),
+                rowHeaders: rowHeaderInputs.map(inp => inp.value),
+                separators: {
+                    colStyle: document.getElementById('sep-col-style').value,
+                    rowStyle: document.getElementById('sep-row-style').value,
+                    color: document.getElementById('sep-color').value,
+                    width: parseInt(document.getElementById('sep-width').value)
+                }
+            };
+        }
+
+        function addToStack(sessionData) {
+            comparisonStack.push(JSON.parse(JSON.stringify(sessionData)));
+            renderStackUI();
+        }
+
+        function addCurrentToStack() {
+            if (activeCells.length === 0) { alert("Grid is empty."); return; }
+            addToStack(captureCurrentSessionData());
+        }
+
+        function addHistoryToStack() {
+            const sel = document.getElementById('stack-history-select');
+            const idx = parseInt(sel.value);
+            if (isNaN(idx)) { alert("Select a history entry first."); return; }
+            const s = historyData[idx];
+            addToStack(s);
+            sel.value = '';
+        }
+
+        function removeFromStack(index) {
+            comparisonStack.splice(index, 1);
+            renderStackUI();
+        }
+
+        function moveStackBlock(index, direction) {
+            const newIdx = index + direction;
+            if (newIdx < 0 || newIdx >= comparisonStack.length) return;
+            const temp = comparisonStack[index];
+            comparisonStack[index] = comparisonStack[newIdx];
+            comparisonStack[newIdx] = temp;
+            renderStackUI();
+        }
+
+        function renderStackUI() {
+            const body = document.getElementById('stack-body');
+            body.innerHTML = '';
+            comparisonStack.forEach((block, idx) => {
+                const blockEl = document.createElement('div');
+                blockEl.className = 'stack-block';
+
+                // Header
+                const header = document.createElement('div');
+                header.className = 'stack-block-header';
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'block-name';
+                nameSpan.textContent = `Block ${idx + 1}: "${block.name || 'Untitled'}"`;
+                header.appendChild(nameSpan);
+
+                const btnUp = document.createElement('button'); btnUp.textContent = '\u25B2'; btnUp.title = 'Move up';
+                btnUp.onclick = () => moveStackBlock(idx, -1);
+                const btnDown = document.createElement('button'); btnDown.textContent = '\u25BC'; btnDown.title = 'Move down';
+                btnDown.onclick = () => moveStackBlock(idx, 1);
+                const btnSnap = document.createElement('button'); btnSnap.textContent = '\uD83D\uDCF7'; btnSnap.title = 'Snapshot PNG';
+                btnSnap.onclick = () => snapshotSingleBlock(idx);
+                const btnRender = document.createElement('button'); btnRender.textContent = '\u26A1'; btnRender.title = 'Render MP4';
+                btnRender.className = 'btn-green';
+                btnRender.onclick = () => renderSingleBlock(idx);
+                const btnRemove = document.createElement('button'); btnRemove.textContent = '\u2715'; btnRemove.title = 'Remove';
+                btnRemove.style.background = '#c42b1c'; btnRemove.style.border = 'none';
+                btnRemove.onclick = () => removeFromStack(idx);
+
+                header.appendChild(btnUp); header.appendChild(btnDown);
+                header.appendChild(btnSnap); header.appendChild(btnRender); header.appendChild(btnRemove);
+                blockEl.appendChild(header);
+
+                // Preview grid
+                const preview = document.createElement('div');
+                preview.className = 'stack-block-preview';
+                const cols = parseInt(block.cols) || 2;
+                const rows = parseInt(block.rows) || 1;
+                preview.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+                (block.cells || []).forEach(cell => {
+                    const cellEl = document.createElement('div');
+                    cellEl.className = 'stack-preview-cell';
+                    if (cell.file) {
+                        const ext = cell.file.split('.').pop().toLowerCase();
+                        if (['mp4', 'webm', 'mov'].includes(ext)) {
+                            const vid = document.createElement('video');
+                            vid.src = cell.file; vid.muted = true; vid.loop = true;
+                            vid.crossOrigin = 'anonymous';
+                            cellEl.appendChild(vid);
+                            // Sync with main grid playback
+                            vid.addEventListener('loadeddata', () => {
+                                if (document.getElementById('sync-toggle').checked) {
+                                    const mainVids = document.querySelectorAll('#grid-container video');
+                                    if (mainVids.length > 0 && !mainVids[0].paused) vid.play();
+                                }
+                            });
+                        } else {
+                            const img = document.createElement('img');
+                            img.src = cell.file;
+                            cellEl.appendChild(img);
+                        }
+                    }
+                    if (cell.caption) {
+                        const cap = document.createElement('div');
+                        cap.className = 'stack-preview-caption';
+                        cap.textContent = cell.caption;
+                        cellEl.appendChild(cap);
+                    }
+                    preview.appendChild(cellEl);
+                });
+
+                blockEl.appendChild(preview);
+                body.appendChild(blockEl);
+            });
+        }
+
+        function renderSingleBlock(index) {
+            const block = comparisonStack[index];
+            const btn = document.querySelectorAll('.stack-block')[index]?.querySelector('.btn-green');
+            if (btn) { btn.disabled = true; btn.textContent = '\u23F3'; }
+            fetch('/render', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(block)
+            }).then(r => r.json()).then(d => {
+                const a = document.createElement('a');
+                a.href = d.file; a.download = d.file; a.click();
+            }).finally(() => {
+                if (btn) { btn.disabled = false; btn.textContent = '\u26A1'; }
+            });
+        }
+
+        function renderAllStack() {
+            if (comparisonStack.length === 0) { alert("Stack is empty."); return; }
+            const direction = document.getElementById('stack-direction').value;
+            const st = document.getElementById('stack-render-status');
+            st.style.display = 'inline'; st.textContent = 'Rendering...';
+            fetch('/render_stack', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ blocks: comparisonStack, direction, output_name: 'stack_output' })
+            }).then(r => r.json()).then(d => {
+                if (d.status === 'ok') {
+                    const a = document.createElement('a');
+                    a.href = d.file; a.download = d.file; a.click();
+                } else {
+                    alert("Render failed: " + (d.message || "Unknown error"));
+                }
+            }).finally(() => { st.style.display = 'none'; });
+        }
+
+        function snapshotSingleBlock(index) {
+            const block = comparisonStack[index];
+            renderBlockToCanvas(block, (canvas) => {
+                const a = document.createElement('a');
+                a.download = `block_${index + 1}_snapshot.png`;
+                a.href = canvas.toDataURL('image/png');
+                a.click();
+            });
+        }
+
+        function snapshotAllStack() {
+            if (comparisonStack.length === 0) { alert("Stack is empty."); return; }
+            const direction = document.getElementById('stack-direction').value;
+
+            // Render each block to a canvas, then combine
+            const blockCanvases = [];
+            let completed = 0;
+
+            comparisonStack.forEach((block, idx) => {
+                renderBlockToCanvas(block, (canvas) => {
+                    blockCanvases[idx] = canvas;
+                    completed++;
+                    if (completed === comparisonStack.length) {
+                        combineCanvases(blockCanvases, direction);
+                    }
+                });
+            });
+        }
+
+        function renderBlockToCanvas(block, callback) {
+            const cols = parseInt(block.cols) || 2;
+            const rows = parseInt(block.rows) || 1;
+            const VID_W = 1280, VID_H = 720, CAP_H = 80, TOTAL_H = VID_H + CAP_H;
+
+            const title = (block.title || '').trim();
+            const TITLE_H = title ? 120 : 0;
+            const currentColHeaders = block.colHeaders || [];
+            const currentRowHeaders = block.rowHeaders || [];
+            const hasColHeaders = currentColHeaders.some(t => t && t.trim());
+            const hasRowHeaders = currentRowHeaders.some(t => t && t.trim());
+            const HDR_W = hasRowHeaders ? 300 : 0;
+            const HDR_H = hasColHeaders ? 80 : 0;
+            const CONTENT_Y_OFF = TITLE_H + HDR_H;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = HDR_W + VID_W * cols;
+            canvas.height = TITLE_H + HDR_H + TOTAL_H * rows;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (title) {
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 64px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(title, canvas.width / 2, TITLE_H / 2);
+            }
+            if (hasColHeaders) {
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 40px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                currentColHeaders.forEach((text, c) => { if (text && text.trim()) ctx.fillText(text, HDR_W + c * VID_W + VID_W / 2, TITLE_H + HDR_H / 2); });
+            }
+            if (hasRowHeaders) {
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 36px Arial'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+                currentRowHeaders.forEach((text, r) => { if (text && text.trim()) ctx.fillText(text, HDR_W - 20, CONTENT_Y_OFF + r * TOTAL_H + TOTAL_H / 2); });
+            }
+
+            // Load media and draw cells
+            const cells = block.cells || [];
+            let loadCount = 0;
+            const totalCells = cells.length;
+            const tR = VID_W / VID_H;
+
+            function checkDone() {
+                loadCount++;
+                if (loadCount >= totalCells) {
+                    // Draw separators
+                    const sep = block.separators || {};
+                    const colSepStyle = sep.colStyle || 'none';
+                    const rowSepStyle = sep.rowStyle || 'none';
+                    const sepColor = sep.color || '#666666';
+                    const sepWidth = parseInt(sep.width) || 1;
+
+                    function setDash(ctx, style) {
+                        if (style === 'dashed') ctx.setLineDash([12, 6]);
+                        else if (style === 'dotted') ctx.setLineDash([3, 4]);
+                        else ctx.setLineDash([]);
+                    }
+                    ctx.strokeStyle = sepColor; ctx.lineWidth = sepWidth;
+                    if (colSepStyle !== 'none') {
+                        setDash(ctx, colSepStyle);
+                        for (let c = 1; c < cols; c++) { const x = HDR_W + c * VID_W; ctx.beginPath(); ctx.moveTo(x, CONTENT_Y_OFF); ctx.lineTo(x, CONTENT_Y_OFF + rows * TOTAL_H); ctx.stroke(); }
+                    }
+                    if (rowSepStyle !== 'none') {
+                        setDash(ctx, rowSepStyle);
+                        for (let r = 1; r < rows; r++) { const y = CONTENT_Y_OFF + r * TOTAL_H; ctx.beginPath(); ctx.moveTo(HDR_W, y); ctx.lineTo(HDR_W + cols * VID_W, y); ctx.stroke(); }
+                    }
+                    ctx.setLineDash([]);
+
+                    callback(canvas);
+                }
+            }
+
+            if (totalCells === 0) { callback(canvas); return; }
+
+            cells.forEach((cell, idx) => {
+                const r = Math.floor(idx / cols), c = idx % cols;
+                const cX = HDR_W + c * VID_W, cY = CONTENT_Y_OFF + r * TOTAL_H;
+
+                if (cell.caption) {
+                    ctx.fillStyle = '#000'; ctx.fillRect(cX, cY, VID_W, CAP_H);
+                    ctx.fillStyle = '#fff'; ctx.font = 'bold 40px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(cell.caption, cX + VID_W / 2, cY + CAP_H / 2);
+                }
+
+                if (!cell.file) { checkDone(); return; }
+
+                const ext = cell.file.split('.').pop().toLowerCase();
+                if (['mp4', 'webm', 'mov'].includes(ext)) {
+                    // Try to find the video in the stack preview
+                    const stackVids = document.querySelectorAll('.stack-preview-cell video');
+                    let found = false;
+                    stackVids.forEach(vid => {
+                        if (vid.src.endsWith(cell.file) || vid.getAttribute('src') === cell.file) {
+                            if (vid.readyState >= 2) {
+                                drawMediaToCanvas(ctx, vid, cX, cY + CAP_H, VID_W, VID_H, tR);
+                                found = true;
+                            }
+                        }
+                    });
+                    if (!found) {
+                        // Also try main grid videos
+                        const mainVids = document.querySelectorAll('#grid-container video');
+                        mainVids.forEach(vid => {
+                            if ((vid.src.endsWith(cell.file) || vid.getAttribute('src') === cell.file) && vid.readyState >= 2) {
+                                drawMediaToCanvas(ctx, vid, cX, cY + CAP_H, VID_W, VID_H, tR);
+                                found = true;
+                            }
+                        });
+                    }
+                    checkDone();
+                } else {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => { drawMediaToCanvas(ctx, img, cX, cY + CAP_H, VID_W, VID_H, tR); checkDone(); };
+                    img.onerror = () => { checkDone(); };
+                    img.src = cell.file;
+                }
+            });
+        }
+
+        function drawMediaToCanvas(ctx, media, x, y, areaW, areaH, targetRatio) {
+            const sW = media.videoWidth || media.naturalWidth || 0;
+            const sH = media.videoHeight || media.naturalHeight || 0;
+            if (sW === 0) return;
+            let dW, dH, dX, dY;
+            if ((sW / sH) > targetRatio) { dW = areaW; dH = areaW / (sW / sH); dX = x; dY = y + (areaH - dH) / 2; }
+            else { dH = areaH; dW = areaH * (sW / sH); dY = y; dX = x + (areaW - dW) / 2; }
+            ctx.drawImage(media, dX, dY, dW, dH);
+        }
+
+        function combineCanvases(canvases, direction) {
+            const finalCanvas = document.createElement('canvas');
+            const ctx = finalCanvas.getContext('2d');
+
+            if (direction === 'vertical') {
+                const maxW = Math.max(...canvases.map(c => c.width));
+                const totalH = canvases.reduce((sum, c) => sum + c.height, 0);
+                finalCanvas.width = maxW; finalCanvas.height = totalH;
+                ctx.fillStyle = '#000'; ctx.fillRect(0, 0, maxW, totalH);
+                let yOff = 0;
+                canvases.forEach(c => {
+                    ctx.drawImage(c, (maxW - c.width) / 2, yOff);
+                    yOff += c.height;
+                });
+            } else {
+                const totalW = canvases.reduce((sum, c) => sum + c.width, 0);
+                const maxH = Math.max(...canvases.map(c => c.height));
+                finalCanvas.width = totalW; finalCanvas.height = maxH;
+                ctx.fillStyle = '#000'; ctx.fillRect(0, 0, totalW, maxH);
+                let xOff = 0;
+                canvases.forEach(c => {
+                    ctx.drawImage(c, xOff, (maxH - c.height) / 2);
+                    xOff += c.width;
+                });
+            }
+
+            const a = document.createElement('a');
+            a.download = 'stack_snapshot.png';
+            a.href = finalCanvas.toDataURL('image/png');
+            a.click();
+        }
+
+        // Override globalPlay/Pause/Reset to also control stack videos
+        const _origGlobalPlay = globalPlay;
+        globalPlay = function() { _origGlobalPlay(); document.querySelectorAll('.stack-preview-cell video').forEach(v => v.play()); };
+        const _origGlobalPause = globalPause;
+        globalPause = function() { _origGlobalPause(); document.querySelectorAll('.stack-preview-cell video').forEach(v => v.pause()); };
+        const _origGlobalReset = globalReset;
+        globalReset = function() { _origGlobalReset(); document.querySelectorAll('.stack-preview-cell video').forEach(v => v.currentTime = 0); };
+
+        // --- Speed & Skip Controls ---
+        function globalSkip(seconds) {
+            _programmaticSeek = true;
+            document.querySelectorAll('video').forEach(v => {
+                v.currentTime = Math.max(0, Math.min(isFinite(v.duration) ? v.duration : Infinity, v.currentTime + seconds));
+            });
+            setTimeout(() => { _programmaticSeek = false; }, 500);
+        }
+        function globalSetSpeed(rate) {
+            document.querySelectorAll('video').forEach(v => v.playbackRate = parseFloat(rate));
+        }
+
+        // --- Seek Bar ---
+        let _seekDragging = false;
+        let _seekSyncTimer = null;
+        function _formatTime(s) {
+            if (!isFinite(s) || isNaN(s)) return '0:00';
+            return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+        }
+        (function _seekBarLoop() {
+            if (!_seekDragging) {
+                const leader = document.querySelector('#grid-container video') || document.querySelector('.stack-preview-cell video');
+                const bar = document.getElementById('seek-bar');
+                if (leader && bar && isFinite(leader.duration) && leader.duration > 0) {
+                    bar.value = (leader.currentTime / leader.duration) * 1000;
+                    document.getElementById('seek-time').textContent = _formatTime(leader.currentTime);
+                    document.getElementById('seek-duration').textContent = _formatTime(leader.duration);
+                }
+            }
+            requestAnimationFrame(_seekBarLoop);
+        })();
+        (function() {
+            const bar = document.getElementById('seek-bar');
+            bar.addEventListener('pointerdown', () => { _seekDragging = true; });
+            // On release: stop bar-tracking lock, but let the seek-event timer expire naturally
+            bar.addEventListener('pointerup', () => { _seekDragging = false; });
+            bar.addEventListener('input', () => {
+                _programmaticSeek = true;
+                clearTimeout(_seekSyncTimer);
+                const pct = parseInt(bar.value) / 1000;
+                document.querySelectorAll('video').forEach(v => {
+                    if (isFinite(v.duration)) v.currentTime = pct * v.duration;
+                });
+                // Keep suppressed long enough for all async onseeking events to drain
+                _seekSyncTimer = setTimeout(() => { _programmaticSeek = false; }, 500);
+            });
+        })();
     </script>
 </body>
 
